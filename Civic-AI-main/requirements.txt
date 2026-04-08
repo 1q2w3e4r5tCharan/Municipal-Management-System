@@ -1,0 +1,20 @@
+fastapi==0.95.2
+uvicorn[standard]==0.22.0
+# Use a Pillow wheel version that has prebuilt binaries for more Python versions
+# 10.4.0 is available as a prebuilt wheel on PyPI
+pillow==10.4.0
+python-multipart==0.0.6
+requests==2.31.0
+pytest==7.4.0
+httpx==0.24.0
+
+# Dotenv loader for local .env support
+python-dotenv==1.0.0
+
+# Optional (if you want to plug in real models):
+# tensorflow
+# torch
+# transformers
+
+# For Google OAuth-based authentication to call Generative Language API
+google-auth>=2.0.0

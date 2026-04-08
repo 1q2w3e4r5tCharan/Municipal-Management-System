@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicAI - Smart City Issue Reporting</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Authentication Screens -->
+    <div id="authContainer" class="auth-container active">
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen" class="auth-screen active">
+            <div class="auth-card">
+                <div class="auth-logo">🏛️</div>
+                <h1 class="auth-title">CivicAI Agent</h1>
+                <p class="auth-tagline">Smart Cities, Responsive Governance</p>
+                <div class="auth-buttons">
+                    <button class="btn btn-primary btn-large" onclick="showAuthScreen('signInScreen')">Sign In</button>
+                    <button class="btn btn-outline btn-large" onclick="showAuthScreen('signUpScreen')">Create Account</button>
+                    <button class="btn-link-auth" onclick="continueAsGuest()">Continue as Guest</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sign In Screen -->
+        <div id="signInScreen" class="auth-screen">
+            <div class="auth-card auth-card-enhanced">
+                <button class="auth-back" onclick="showAuthScreen('welcomeScreen')">←</button>
+                <div class="auth-logo-animated">🏛️</div>
+                <h2 class="auth-title-large">Welcome Back</h2>
+                <p class="auth-subtitle-enhanced">Sign in to continue to CivicAI</p>
+                
+                <form class="auth-form" onsubmit="handleSignIn(event)">
+                    <div class="form-group-enhanced">
+                        <label class="form-label-floating">Email Address</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">📧</span>
+                            <input type="email" class="form-control-enhanced" id="signInEmail" placeholder="you@example.com" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group-enhanced">
+                        <label class="form-label-floating">Password</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔒</span>
+                            <input type="password" class="form-control-enhanced" id="signInPassword" placeholder="Enter your password" required>
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('signInPassword')">
+                                <span class="toggle-icon">👁️</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input type="checkbox" id="rememberMe" class="form-checkbox">
+                        <label for="rememberMe" class="form-check-label">Remember me</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-large btn-elevated">Sign In</button>
+                    
+                    <div class="auth-link-small">
+                        <a href="#" class="btn-link">Forgot Password?</a>
+                    </div>
+                </form>
+                
+                <div class="auth-divider">
+                    <span>OR</span>
+                </div>
+                
+                <button class="btn btn-google btn-large" onclick="handleGoogleSignIn()">
+                    <span class="google-icon">G</span>
+                    <span>Continue with Google</span>
+                </button>
+                
+                <div class="auth-footer">
+                    <span>Don't have an account?</span>
+                    <button class="btn-link" onclick="showAuthScreen('signUpScreen')">Sign up</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sign Up Screen -->
+        <div id="signUpScreen" class="auth-screen">
+            <div class="auth-card auth-card-large">
+                <button class="auth-back" onclick="showAuthScreen('welcomeScreen')">←</button>
+                <div class="auth-logo-small">🏛️</div>
+                <h2 class="auth-title">Create Account</h2>
+                <p class="auth-subtitle">Join CivicAI to make your city better</p>
+                
+                <!-- Progress Indicator -->
+                <div class="progress-indicator" id="progressIndicator">
+                    <div class="progress-step active" data-step="1">
+                        <div class="progress-dot">1</div>
+                        <div class="progress-label">Personal</div>
+                    </div>
+                    <div class="progress-step" data-step="2">
+                        <div class="progress-dot">2</div>
+                        <div class="progress-label">Contact</div>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <div class="progress-dot">3</div>
+                        <div class="progress-label">Location</div>
+                    </div>
+                    <div class="progress-step" data-step="4">
+                        <div class="progress-dot">4</div>
+                        <div class="progress-label">Verify</div>
+                    </div>
+                </div>
+                
+                <form class="auth-form" id="signUpForm" onsubmit="handleSignUp(event)">
+                    <!-- Step 1: Personal Info -->
+                    <div class="signup-step active" data-step="1">
+                        <div class="form-group">
+                            <label class="form-label">Full Name *</label>
+                            <input type="text" class="form-control" id="signUpName" placeholder="John Doe" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" id="signUpEmail" placeholder="you@example.com" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Password *</label>
+                            <input type="password" class="form-control" id="signUpPassword" placeholder="Create a strong password" required minlength="8">
+                            <div class="password-strength" id="passwordStrength"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Confirm Password *</label>
+                            <input type="password" class="form-control" id="confirmPassword" placeholder="Re-enter your password" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Contact Details -->
+                    <div class="signup-step" data-step="2">
+                        <div class="form-group">
+                            <label class="form-label">Phone Number *</label>
+                            <input type="tel" class="form-control" id="signUpPhone" placeholder="+1 (555) 000-0000" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Gender</label>
+                            <select class="form-control" id="signUpGender">
+                                <option value="">Select gender (optional)</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                                <option value="prefer-not">Prefer not to say</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Location Info -->
+                    <div class="signup-step" data-step="3">
+                        <div class="form-group">
+                            <label class="form-label">Street Address *</label>
+                            <input type="text" class="form-control" id="signUpAddress" placeholder="123 Main Street" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Municipality/Corporation *</label>
+                            <select class="form-control" id="signUpMunicipality" required>
+                                <option value="">Select municipality</option>
+                                <option value="Springfield">Springfield</option>
+                                <option value="Madison">Madison</option>
+                                <option value="Franklin">Franklin</option>
+                                <option value="Georgetown">Georgetown</option>
+                                <option value="Riverside">Riverside</option>
+                                <option value="Fairview">Fairview</option>
+                                <option value="Greenwood">Greenwood</option>
+                                <option value="Oakville">Oakville</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">District *</label>
+                            <input type="text" class="form-control" id="signUpDistrict" placeholder="Central District" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">State *</label>
+                            <select class="form-control" id="signUpState" required>
+                                <option value="">Select state</option>
+                                <option value="Alabama">Alabama</option>
+                                <option value="Alaska">Alaska</option>
+                                <option value="Arizona">Arizona</option>
+                                <option value="California">California</option>
+                                <option value="Florida">Florida</option>
+                                <option value="Illinois">Illinois</option>
+                                <option value="New York">New York</option>
+                                <option value="Texas">Texas</option>
+                                <option value="Washington">Washington</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">ZIP/PIN Code *</label>
+                            <input type="text" class="form-control" id="signUpZip" placeholder="12345" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 4: Verification -->
+                    <div class="signup-step" data-step="4">
+                        <div class="verification-info">
+                            <div class="verification-icon">📧</div>
+                            <h3>Verify Your Identity</h3>
+                            <p>We've sent verification codes to your email and phone number.</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Email Verification Code *</label>
+                            <input type="text" class="form-control" id="emailVerificationCode" placeholder="Enter 6-digit code" maxlength="6" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">SMS Verification Code *</label>
+                            <input type="text" class="form-control" id="smsVerificationCode" placeholder="Enter 6-digit code" maxlength="6" required>
+                        </div>
+                        
+                        <div class="auth-link-small">
+                            <a href="#" class="btn-link" onclick="resendCodes(event)">Resend codes</a>
+                        </div>
+                    </div>
+                    
+                    <div class="signup-actions">
+                        <button type="button" class="btn btn-outline" id="prevStepBtn" onclick="previousStep()" style="display: none;">Previous</button>
+                        <button type="button" class="btn btn-primary" id="nextStepBtn" onclick="nextStep()">Next</button>
+                        <button type="submit" class="btn btn-primary" id="submitSignUpBtn" style="display: none;">Complete Registration</button>
+                    </div>
+                </form>
+                
+                <div class="auth-divider">
+                    <span>OR</span>
+                </div>
+                
+                <button class="btn btn-google btn-large" onclick="handleGoogleSignUp()">
+                    <span class="google-icon">G</span>
+                    <span>Sign up with Google</span>
+                </button>
+                
+                <div class="auth-footer">
+                    <span>Already have an account?</span>
+                    <button class="btn-link" onclick="showAuthScreen('signInScreen')">Sign in</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Type Selection Screen -->
+        <div id="userTypeScreen" class="auth-screen">
+            <div class="auth-card">
+                <div class="auth-logo-small">🏛️</div>
+                <h2 class="auth-title">Select Your Role</h2>
+                <p class="auth-subtitle">How would you like to use CivicAI?</p>
+                
+                <div class="user-type-options">
+                    <div class="user-type-card" onclick="selectUserType('citizen')">
+                        <div class="user-type-icon">👤</div>
+                        <h3>Citizen</h3>
+                        <p>Report issues and track their resolution</p>
+                    </div>
+                    
+                    <div class="user-type-card" onclick="selectUserType('municipal')">
+                        <div class="user-type-icon">🏛️</div>
+                        <h3>Municipal Staff</h3>
+                        <p>Manage and resolve community issues</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Municipal Staff Verification Screen -->
+        <div id="municipalVerifyScreen" class="auth-screen">
+            <div class="auth-card">
+                <button class="auth-back" onclick="showAuthScreen('userTypeScreen')">←</button>
+                <div class="auth-logo-small">🏛️</div>
+                <h2 class="auth-title">Municipal Staff Verification</h2>
+                <p class="auth-subtitle">Additional information required for staff access</p>
+                
+                <form class="auth-form" onsubmit="handleMunicipalVerify(event)">
+                    <div class="form-group">
+                        <label class="form-label">Department *</label>
+                        <select class="form-control" id="staffDepartment" required>
+                            <option value="">Select department</option>
+                            <option value="Public Works">Public Works</option>
+                            <option value="Sanitation">Sanitation</option>
+                            <option value="Traffic Management">Traffic Management</option>
+                            <option value="Parks & Recreation">Parks &amp; Recreation</option>
+                            <option value="Utilities">Utilities</option>
+                            <option value="Code Enforcement">Code Enforcement</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Employee ID *</label>
+                        <input type="text" class="form-control" id="employeeId" placeholder="e.g., PW-2024-001" required>
+                    </div>
+                    
+                    <div class="info-message">
+                        <div class="info-icon">ℹ️</div>
+                        <div>
+                            <strong>Admin Approval Required</strong>
+                            <p>Your account will be reviewed by an administrator before access is granted. You'll receive an email notification within 24-48 hours.</p>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-large">Submit for Approval</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Mode Switcher (Hidden during auth) -->
+    <div class="mode-switcher" style="display: none;">
+        <button id="citizenModeBtn" class="mode-btn active">
+            <span class="mode-icon">👤</span>
+            <span>Citizen</span>
+        </button>
+        <button id="municipalModeBtn" class="mode-btn">
+            <span class="mode-icon">🏛️</span>
+            <span>Municipal</span>
+        </button>
+        <button id="logoutBtn" class="mode-btn" onclick="logout()" title="Logout">
+            <span class="mode-icon">🚪</span>
+            <span>Logout</span>
+        </button>
+    </div>
+
+    <!-- ========== CITIZEN INTERFACE ========== -->
+    <div id="citizenApp" class="app-container">
+        <!-- Citizen Dashboard -->
+        <div id="citizenDashboard" class="view active">
+            <header class="citizen-header">
+                <div class="header-content">
+                    <div>
+                        <h1>CivicAI</h1>
+                        <p class="header-subtitle" id="userLocationGreeting">Making our city better, together</p>
+                    </div>
+                    <div class="user-badge">
+                        <div class="user-avatar" id="userAvatar">AJ</div>
+                        <div class="user-info">
+                            <span class="user-name" id="userName">Alex Johnson</span>
+                            <span class="user-rank">City Guardian</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-container">
+                <!-- Welcome Message -->
+                <div class="section-card" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); border-left: 4px solid var(--color-primary); margin-bottom: var(--spacing-lg);">
+                    <h3 id="welcomeMessage" style="font-size: 20px; font-weight: 700; margin-bottom: var(--spacing-sm);">Welcome back, Alex! 👋</h3>
+                    <p style="color: var(--color-text-secondary); margin: 0;">You've helped resolve <strong>5 issues</strong> this month in <strong id="userMunicipality">Springfield</strong>. Keep up the great work!</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">📊</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="totalReports">23</div>
+                            <div class="stat-label">Total Reports</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);">✓</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="resolvedIssues">18</div>
+                            <div class="stat-label">Issues Resolved</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);">⭐</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="civicPoints">1,250</div>
+                            <div class="stat-label">Civic Points</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);">🏆</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="communityRank">#47</div>
+                            <div class="stat-label">Community Rank</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map Section -->
+                <div class="section-card map-section">
+                    <h3 class="section-title">Nearby Issues</h3>
+                    <div class="filter-chips">
+                        <button class="chip active" data-filter="all">All</button>
+                        <button class="chip" data-filter="active">Active</button>
+                        <button class="chip" data-filter="resolved">Resolved</button>
+                        <button class="chip" data-filter="mine">My Reports</button>
+                    </div>
+                    <div class="map-container" id="issueMap">
+                        <div class="map-marker" style="top: 30%; left: 40%;" data-status="progress" data-priority="87"></div>
+                        <div class="map-marker" style="top: 50%; left: 60%;" data-status="review" data-priority="62"></div>
+                        <div class="map-marker" style="top: 70%; left: 30%;" data-status="resolved" data-priority="75"></div>
+                        <div class="map-marker" style="top: 40%; left: 70%;" data-status="submitted" data-priority="45"></div>
+                        <div class="map-marker" style="top: 60%; left: 50%;" data-status="progress" data-priority="95"></div>
+                    </div>
+                </div>
+
+                <!-- Community Activity Feed -->
+                <div class="section-card">
+                    <h3 class="section-title">Recent Community Activity</h3>
+                    <div class="activity-feed" id="activityFeed"></div>
+                </div>
+            </div>
+
+            <!-- Floating Action Button -->
+            <button class="fab" id="reportIssueFab">
+                <span class="fab-icon">📸</span>
+                <span class="fab-text">Report Issue</span>
+            </button>
+
+            <!-- Bottom Navigation -->
+            <nav class="bottom-nav">
+                <button class="nav-item active" data-view="citizenDashboard">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Home</span>
+                </button>
+                <button class="nav-item" data-view="reportIssue">
+                    <span class="nav-icon">📸</span>
+                    <span class="nav-label">Report</span>
+                </button>
+                <button class="nav-item" data-view="trackReport">
+                    <span class="nav-icon">📍</span>
+                    <span class="nav-label">Track</span>
+                </button>
+                <button class="nav-item" data-view="citizenProfile">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-label">Profile</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Report Issue View -->
+        <div id="reportIssue" class="view">
+            <header class="view-header">
+                <button class="back-btn" onclick="navigateTo('citizenDashboard')">←</button>
+                <h2>Report New Issue</h2>
+            </header>
+            <div class="content-container">
+                <div class="upload-section">
+                    <div class="upload-area" id="uploadArea">
+                        <input type="file" id="photoInput" accept="image/*" hidden>
+                        <div class="upload-placeholder" id="uploadPlaceholder">
+                            <div class="upload-icon">📷</div>
+                            <p>Take or Upload Photo</p>
+                            <button class="btn btn-primary" onclick="document.getElementById('photoInput').click()">Choose Photo</button>
+                        </div>
+                        <img id="photoPreview" class="photo-preview hidden" alt="Preview">
+                    </div>
+                </div>
+
+                <div class="ai-classification" id="aiClassification"></div>
+
+                <div class="form-section">
+                    <label class="form-label">Issue Category</label>
+                    <select id="issueCategory" class="form-select">
+                        <option value="">Select category...</option>
+                        <option value="Pothole">🕳️ Pothole</option>
+                        <option value="Broken Streetlight">💡 Broken Streetlight</option>
+                        <option value="Illegal Dumping">🗑️ Illegal Dumping</option>
+                        <option value="Graffiti">🎨 Graffiti/Vandalism</option>
+                        <option value="Sidewalk Damage">🚶 Sidewalk Damage</option>
+                        <option value="Water Leak">💧 Water Leak</option>
+                        <option value="Fallen Tree">🌳 Fallen Tree</option>
+                        <option value="Abandoned Vehicle">🚗 Abandoned Vehicle</option>
+                        <option value="Traffic Signal">🚦 Traffic Signal Issue</option>
+                        <option value="Infrastructure Damage">🏗️ Infrastructure Damage</option>
+                    </select>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">Location</label>
+                    <div class="location-display" id="locationDisplay">
+                        <span class="location-icon">📍</span>
+                        <span class="location-text">Main St &amp; 5th Ave</span>
+                        <button class="btn-link">Change</button>
+                    </div>
+                    <div class="mini-map">
+                        <div class="mini-map-marker"></div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label">Description (Optional)</label>
+                    <textarea id="issueDescription" class="form-textarea" placeholder="Describe the issue in detail..."></textarea>
+                    <button class="voice-btn" title="Voice to text">🎤</button>
+                </div>
+
+                <div class="priority-indicator" id="priorityIndicator"></div>
+
+                <button class="btn btn-primary btn-large" id="submitReportBtn" disabled>
+                    <span>Submit Report</span>
+                    <span class="points-badge">+50 Points</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Track Report View -->
+        <div id="trackReport" class="view">
+            <header class="view-header">
+                <button class="back-btn" onclick="navigateTo('citizenDashboard')">←</button>
+                <h2>My Reports</h2>
+            </header>
+            <div class="content-container">
+                <div class="reports-list" id="reportsList"></div>
+            </div>
+        </div>
+
+        <!-- Citizen Profile View -->
+        <div id="citizenProfile" class="view">
+            <header class="view-header">
+                <button class="back-btn" onclick="navigateTo('citizenDashboard')">←</button>
+                <h2>Profile &amp; Achievements</h2>
+            </header>
+            <div class="content-container">
+                <div class="profile-header">
+                    <div class="profile-avatar-large">AJ</div>
+                    <h3 class="profile-name">Alex Johnson</h3>
+                    <div class="profile-rank-badge">🛡️ City Guardian</div>
+                    <div class="civic-score-display">
+                        <div class="score-ring">
+                            <svg class="score-ring-svg" viewBox="0 0 100 100">
+                                <circle class="score-ring-bg" cx="50" cy="50" r="45"></circle>
+                                <circle class="score-ring-progress" cx="50" cy="50" r="45" style="stroke-dasharray: 283; stroke-dashoffset: 70.75;"></circle>
+                            </svg>
+                            <div class="score-value">1,250</div>
+                        </div>
+                        <p class="score-label">Civic Score</p>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <h3 class="section-title">Achievements</h3>
+                    <div class="badges-grid">
+                        <div class="badge-card earned">
+                            <div class="badge-icon">⭐</div>
+                            <div class="badge-name">First Reporter</div>
+                        </div>
+                        <div class="badge-card earned">
+                            <div class="badge-icon">🛡️</div>
+                            <div class="badge-name">Neighborhood Guardian</div>
+                        </div>
+                        <div class="badge-card earned">
+                            <div class="badge-icon">🎯</div>
+                            <div class="badge-name">Accuracy Expert</div>
+                        </div>
+                        <div class="badge-card locked">
+                            <div class="badge-icon">🏆</div>
+                            <div class="badge-name">City Champion</div>
+                        </div>
+                        <div class="badge-card locked">
+                            <div class="badge-icon">⚡</div>
+                            <div class="badge-name">Quick Responder</div>
+                        </div>
+                        <div class="badge-card locked">
+                            <div class="badge-icon">💎</div>
+                            <div class="badge-name">Premium Contributor</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <h3 class="section-title">Impact Metrics</h3>
+                    <div class="metrics-list">
+                        <div class="metric-item">
+                            <span class="metric-label">Total Reports Submitted</span>
+                            <span class="metric-value">23</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Reports Verified</span>
+                            <span class="metric-value">21</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Issues Resolved</span>
+                            <span class="metric-value">18</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Civic Points Earned</span>
+                            <span class="metric-value">1,250</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Community Rank</span>
+                            <span class="metric-value">#47</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <h3 class="section-title">Weekly Leaderboard</h3>
+                    <div class="leaderboard" id="leaderboard"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== MUNICIPAL INTERFACE ========== -->
+    <div id="municipalApp" class="app-container">
+        <!-- Municipal Dashboard -->
+        <div id="municipalDashboard" class="view active">
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <div class="logo">🏛️</div>
+                    <h2>CivicAI</h2>
+                    <p class="sidebar-subtitle">Municipal Center</p>
+                </div>
+                <nav class="sidebar-nav">
+                    <button class="sidebar-nav-item active" data-view="municipalDashboard">
+                        <span class="nav-icon">📊</span>
+                        <span>Command Center</span>
+                    </button>
+                    <button class="sidebar-nav-item" data-view="municipalAnalytics">
+                        <span class="nav-icon">📈</span>
+                        <span>Analytics</span>
+                    </button>
+                    <button class="sidebar-nav-item" onclick="openSettingsModal()">
+                        <span class="nav-icon">⚙️</span>
+                        <span>Settings</span>
+                    </button>
+                </nav>
+            </aside>
+
+            <main class="main-content">
+                <header class="municipal-header">
+                    <div>
+                        <h1>Command Center</h1>
+                        <p class="municipal-subtitle">Real-time Issue Management Dashboard</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="header-icon-btn" id="searchBtn" title="Search">
+                            <span class="header-icon">🔍</span>
+                        </button>
+                        <button class="header-icon-btn" id="notificationsBtn" title="Notifications">
+                            <span class="header-icon">🔔</span>
+                            <span class="notification-badge">3</span>
+                        </button>
+                        <div class="profile-dropdown-container">
+                            <button class="header-icon-btn" id="municipalProfileBtn" title="Profile">
+                                <span class="header-icon">👤</span>
+                            </button>
+                            <div class="profile-dropdown-menu" id="profileDropdownMenu">
+                                <div class="dropdown-header-profile">
+                                    <div class="dropdown-avatar-profile">JS</div>
+                                    <div class="dropdown-user-info-profile">
+                                        <p class="dropdown-name-profile">John Smith</p>
+                                        <p class="dropdown-email-profile">john.smith@springfield.gov</p>
+                                    </div>
+                                </div>
+                                <div class="dropdown-menu-items">
+                                    <button class="dropdown-menu-item" onclick="openProfileModal()">
+                                        <span class="dropdown-item-icon">👤</span>
+                                        <span>View Profile</span>
+                                    </button>
+                                    <button class="dropdown-menu-item" onclick="openSettingsModal()">
+                                        <span class="dropdown-item-icon">⚙️</span>
+                                        <span>Account Settings</span>
+                                    </button>
+                                    <button class="dropdown-menu-item" onclick="showToast('Notification preferences', '🔔')">
+                                        <span class="dropdown-item-icon">🔔</span>
+                                        <span>Notification Preferences</span>
+                                    </button>
+                                    <button class="dropdown-menu-item" onclick="showToast('Theme settings', '🎨')">
+                                        <span class="dropdown-item-icon">🎨</span>
+                                        <span>Theme &amp; Display</span>
+                                    </button>
+                                    <button class="dropdown-menu-item" onclick="showToast('Help & support', '❓')">
+                                        <span class="dropdown-item-icon">❓</span>
+                                        <span>Help &amp; Support</span>
+                                    </button>
+                                    <div class="dropdown-divider-line"></div>
+                                    <button class="dropdown-menu-item danger-item" onclick="logout()">
+                                        <span class="dropdown-item-icon">🚪</span>
+                                        <span>Sign Out</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="header-time" id="currentTime"></div>
+                    </div>
+                </header>
+
+                <div class="dashboard-grid">
+                    <!-- Statistics Cards -->
+                    <div class="stats-row">
+                        <div class="stat-card-large">
+                            <div class="stat-icon-large" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);">📋</div>
+                            <div class="stat-content">
+                                <div class="stat-label">Open Issues</div>
+                                <div class="stat-value-large">34</div>
+                                <div class="stat-trend up">↑ 12%</div>
+                            </div>
+                        </div>
+                        <div class="stat-card-large">
+                            <div class="stat-icon-large" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);">⏳</div>
+                            <div class="stat-content">
+                                <div class="stat-label">In Progress</div>
+                                <div class="stat-value-large">18</div>
+                                <div class="stat-trend down">↓ 5%</div>
+                            </div>
+                        </div>
+                        <div class="stat-card-large">
+                            <div class="stat-icon-large" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);">✓</div>
+                            <div class="stat-content">
+                                <div class="stat-label">Resolved Today</div>
+                                <div class="stat-value-large">27</div>
+                                <div class="stat-trend up">↑ 18%</div>
+                            </div>
+                        </div>
+                        <div class="stat-card-large">
+                            <div class="stat-icon-large" style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);">⏱️</div>
+                            <div class="stat-content">
+                                <div class="stat-label">Avg Response Time</div>
+                                <div class="stat-value-large">4.3h</div>
+                                <div class="stat-trend down">↓ 0.5h</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Priority Queue -->
+                    <div class="section-card-large">
+                        <div class="section-header">
+                            <h3 class="section-title">Priority Queue</h3>
+                            <div class="section-actions">
+                                <select class="form-select-small">
+                                    <option>All Departments</option>
+                                    <option>Public Works</option>
+                                    <option>Sanitation</option>
+                                    <option>Traffic Management</option>
+                                    <option>Utilities</option>
+                                </select>
+                                <button class="btn btn-sm">Refresh</button>
+                            </div>
+                        </div>
+                        <div class="priority-queue" id="priorityQueue"></div>
+                    </div>
+
+                    <!-- City Heatmap -->
+                    <div class="section-card-large">
+                        <h3 class="section-title">City Issue Heatmap</h3>
+                        <div class="heatmap-container">
+                            <div class="heatmap-zone" style="top: 20%; left: 30%; width: 150px; height: 150px; opacity: 0.3;"></div>
+                            <div class="heatmap-zone" style="top: 50%; left: 50%; width: 200px; height: 200px; opacity: 0.5;"></div>
+                            <div class="heatmap-zone" style="top: 60%; left: 20%; width: 120px; height: 120px; opacity: 0.4;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Department Workload -->
+                    <div class="section-card-large">
+                        <h3 class="section-title">Department Workload</h3>
+                        <div class="workload-chart" id="workloadChart"></div>
+                    </div>
+
+                    <!-- Executive Summary - PREMIUM REDESIGN -->
+                    <div class="executive-summary-section">
+                        <div class="section-header-premium">
+                            <h2 class="section-title-premium">📊 Executive Summary</h2>
+                            <p class="section-subtitle-premium">Real-time performance metrics</p>
+                        </div>
+                        
+                        <div class="metrics-grid-premium">
+                            <!-- Critical Alerts Card -->
+                            <div class="metric-card-premium metric-card-danger">
+                                <div class="metric-icon-wrapper danger">
+                                    <span class="metric-icon-large">⚠️</span>
+                                </div>
+                                <div class="metric-content-premium">
+                                    <p class="metric-label-premium">Critical Alerts</p>
+                                    <h3 class="metric-value-premium">3</h3>
+                                    <p class="metric-subtitle-premium">
+                                        <span class="attention-badge">⚠️ Requires Attention</span>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Daily Reports Card -->
+                            <div class="metric-card-premium metric-card-primary">
+                                <div class="metric-icon-wrapper primary">
+                                    <span class="metric-icon-large">📈</span>
+                                </div>
+                                <div class="metric-content-premium">
+                                    <p class="metric-label-premium">Daily Reports</p>
+                                    <h3 class="metric-value-premium">47</h3>
+                                    <p class="metric-subtitle-premium">
+                                        <span class="trend-up-badge">↑ +12% vs yesterday</span>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Satisfaction Card -->
+                            <div class="metric-card-premium metric-card-success">
+                                <div class="metric-icon-wrapper success">
+                                    <span class="metric-icon-large">😊</span>
+                                </div>
+                                <div class="metric-content-premium">
+                                    <p class="metric-label-premium">Satisfaction</p>
+                                    <h3 class="metric-value-premium">4.7</h3>
+                                    <p class="metric-subtitle-premium">
+                                        <span class="rating-badge">⭐ Excellent</span>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Cost Savings Card -->
+                            <div class="metric-card-premium metric-card-success">
+                                <div class="metric-icon-wrapper success">
+                                    <span class="metric-icon-large">💰</span>
+                                </div>
+                                <div class="metric-content-premium">
+                                    <p class="metric-label-premium">Cost Savings</p>
+                                    <h3 class="metric-value-premium">$45.6K</h3>
+                                    <p class="metric-subtitle-premium">
+                                        <span class="trend-up-badge">↑ This month</span>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- AI Automation Card -->
+                            <div class="metric-card-premium metric-card-info">
+                                <div class="metric-icon-wrapper info">
+                                    <span class="metric-icon-large">🤖</span>
+                                </div>
+                                <div class="metric-content-premium">
+                                    <p class="metric-label-premium">AI Automation</p>
+                                    <h3 class="metric-value-premium">94.2%</h3>
+                                    <p class="metric-subtitle-premium">
+                                        <span class="efficiency-badge">⚡ Efficiency</span>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Response Rate Card -->
+                            <div class="metric-card-premium metric-card-primary">
+                                <div class="metric-icon-wrapper primary">
+                                    <span class="metric-icon-large">⚡</span>
+                                </div>
+                                <div class="metric-content-premium">
+                                    <p class="metric-label-premium">Response Rate</p>
+                                    <h3 class="metric-value-premium">+23%</h3>
+                                    <p class="metric-subtitle-premium">
+                                        <span class="trend-up-badge">↑ vs last month</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Predictive Alerts - PREMIUM REDESIGN -->
+                    <div class="alerts-section-premium">
+                        <div class="section-header-premium">
+                            <div>
+                                <h2 class="section-title-premium">🔮 Predictive Maintenance Alerts</h2>
+                                <p class="section-subtitle-premium">AI-powered maintenance forecasting</p>
+                            </div>
+                            <button class="btn-view-all-premium" onclick="showViewAllAlerts()">View All Alerts →</button>
+                        </div>
+                        
+                        <div class="alerts-container-premium">
+                            <!-- Alert Card 1 - Medium Priority -->
+                            <div class="alert-card-premium alert-priority-medium">
+                                <div class="alert-priority-stripe"></div>
+                                
+                                <div class="alert-header-premium">
+                                    <div class="alert-icon-wrapper-premium medium">
+                                        <span class="alert-icon-premium">🌧️</span>
+                                    </div>
+                                    <div class="alert-title-group-premium">
+                                        <div class="alert-category-premium">
+                                            <span class="category-badge-premium">Seasonal Maintenance</span>
+                                            <span class="priority-tag-premium priority-medium">MEDIUM</span>
+                                        </div>
+                                        <h3 class="alert-title-premium">Pothole Formation Forecast</h3>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert-body-premium">
+                                    <p class="alert-description-premium">
+                                        Pothole formation likely in North District based on weather patterns 
+                                        and historical data analysis. Proactive repair recommended.
+                                    </p>
+                                    
+                                    <div class="alert-meta-grid-premium">
+                                        <div class="alert-meta-item-premium">
+                                            <span class="meta-icon-premium">⏰</span>
+                                            <div class="meta-content-premium">
+                                                <span class="meta-label-premium">Timeline</span>
+                                                <span class="meta-value-premium">Next 2 weeks</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="alert-meta-item-premium">
+                                            <span class="meta-icon-premium">💰</span>
+                                            <div class="meta-content-premium">
+                                                <span class="meta-label-premium">Prevention Cost</span>
+                                                <span class="meta-value-premium cost">$2,400</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="alert-meta-item-premium">
+                                            <span class="meta-icon-premium">📍</span>
+                                            <div class="meta-content-premium">
+                                                <span class="meta-label-premium">Area</span>
+                                                <span class="meta-value-premium">North District</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="alert-meta-item-premium">
+                                            <span class="meta-icon-premium">🎯</span>
+                                            <div class="meta-content-premium">
+                                                <span class="meta-label-premium">Confidence</span>
+                                                <span class="meta-value-premium">87%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert-footer-premium">
+                                    <button class="btn-alert-action-premium btn-text-alert">
+                                        <span>ℹ️</span> View Details
+                                    </button>
+                                    <button class="btn-alert-action-premium btn-filled-alert">
+                                        <span>📅</span> Schedule Maintenance
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Alert Card 2 - High Priority -->
+                            <div class="alert-card-premium alert-priority-high">
+                                <div class="alert-priority-stripe"></div>
+                                
+                                <div class="alert-header-premium">
+                                    <div class="alert-icon-wrapper-premium high">
+                                        <span class="alert-icon-premium">🚛</span>
+                                    </div>
+                                    <div class="alert-title-group-premium">
+                                        <div class="alert-category-premium">
+                                            <span class="category-badge-premium">Equipment Maintenance</span>
+                                            <span class="priority-tag-premium priority-high">HIGH</span>
+                                        </div>
+                                        <h3 class="alert-title-premium">Service Due - Sanitation Truck #7</h3>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert-body-premium">
+                                    <p class="alert-description-premium">
+                                        Sanitation truck #7 due for scheduled service. Immediate attention 
+                                        required to prevent breakdown and service disruption.
+                                    </p>
+                                    
+                                    <div class="alert-meta-grid-premium">
+                                        <div class="alert-meta-item-premium">
+                                            <span class="meta-icon-premium">⏰</span>
+                                            <div class="meta-content-premium">
+                                                <span class="meta-label-premium">Due Date</span>
+                                                <span class="meta-value-premium urgent">Due in 3 days</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="alert-meta-item-premium">
+                                            <span class="meta-icon-premium">💰</span>
+                                            <div class="meta-content-premium">
+                                                <span class="meta-label-premium">Service Cost</span>
+                                                <span class="meta-value-premium cost">$450</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="alert-meta-item-premium">
+                                            <span class="meta-icon-premium">🔧</span>
+                                            <div class="meta-content-premium">
+                                                <span class="meta-label-premium">Last Service</span>
+                                                <span class="meta-value-premium">90 days ago</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="alert-meta-item-premium">
+                                            <span class="meta-icon-premium">🏛️</span>
+                                            <div class="meta-content-premium">
+                                                <span class="meta-label-premium">Department</span>
+                                                <span class="meta-value-premium">Sanitation</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert-footer-premium">
+                                    <button class="btn-alert-action-premium btn-text-alert">
+                                        <span>📋</span> Service History
+                                    </button>
+                                    <button class="btn-alert-action-premium btn-filled-alert urgent-btn">
+                                        <span>⚡</span> Schedule Service
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Staff Directory -->
+                    <div class="section-card-large">
+                        <div class="section-header">
+                            <h3 class="section-title">Staff Directory &amp; Workload</h3>
+                            <button class="btn btn-sm" onclick="showManageTeam()">Manage Team</button>
+                        </div>
+                        <div class="staff-grid-enhanced">
+                            <div class="staff-card-enhanced">
+                                <div class="staff-header-new">
+                                    <div class="staff-avatar-new">JS</div>
+                                    <div class="staff-info-new">
+                                        <div class="staff-name-row">
+                                            <h4>John Smith</h4>
+                                            <span class="status-badge active">Active</span>
+                                        </div>
+                                        <p class="staff-role-new">Public Works Supervisor</p>
+                                    </div>
+                                </div>
+                                <div class="staff-body-new">
+                                    <div class="contact-row">
+                                        <span class="icon">📞</span>
+                                        <span>+1-555-0789</span>
+                                    </div>
+                                    <div class="contact-row">
+                                        <span class="icon">📧</span>
+                                        <span>j.smith@springfield.gov</span>
+                                    </div>
+                                    <div class="contact-row">
+                                        <span class="icon">🏢</span>
+                                        <span>Public Works Department</span>
+                                    </div>
+                                    <div class="contact-row">
+                                        <span class="icon">📋</span>
+                                        <span>Current Load: 8 tickets</span>
+                                    </div>
+                                    <div class="contact-row">
+                                        <span class="icon">⭐</span>
+                                        <span>Performance: 4.6/5</span>
+                                    </div>
+                                </div>
+                                <div class="staff-footer-new">
+                                    <button class="btn-secondary-small" onclick="showStaffDetails(this)">View Details</button>
+                                    <button class="btn-primary-small" onclick="assignTicketToStaff(this)">Assign Ticket</button>
+                                </div>
+                            </div>
+                            <div class="staff-card-enhanced">
+                                <div class="staff-header-new">
+                                    <div class="staff-avatar-new">MG</div>
+                                    <div class="staff-info-new">
+                                        <div class="staff-name-row">
+                                            <h4>Maria Garcia</h4>
+                                            <span class="status-badge active">Active</span>
+                                        </div>
+                                        <p class="staff-role-new">Sanitation Coordinator</p>
+                                    </div>
+                                </div>
+                                <div class="staff-body-new">
+                                    <div class="contact-row">
+                                        <span class="icon">📞</span>
+                                        <span>+1-555-0321</span>
+                                    </div>
+                                    <div class="contact-row">
+                                        <span class="icon">📧</span>
+                                        <span>m.garcia@springfield.gov</span>
+                                    </div>
+                                    <div class="contact-row">
+                                        <span class="icon">🏢</span>
+                                        <span>Sanitation Department</span>
+                                    </div>
+                                    <div class="contact-row">
+                                        <span class="icon">📋</span>
+                                        <span>Current Load: 5 tickets</span>
+                                    </div>
+                                    <div class="contact-row">
+                                        <span class="icon">⭐</span>
+                                        <span>Performance: 4.8/5</span>
+                                    </div>
+                                </div>
+                                <div class="staff-footer-new">
+                                    <button class="btn-secondary-small" onclick="showStaffDetails(this)">View Details</button>
+                                    <button class="btn-primary-small" onclick="assignTicketToStaff(this)">Assign Ticket</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Predictive Maintenance Alerts -->
+                    <div class="section-card-large predictive-alerts-section">
+                        <div class="section-header">
+                            <h3 class="section-title">Predictive Maintenance Alerts</h3>
+                            <div class="section-actions">
+                                <button class="btn btn-sm" onclick="acknowledgeAllAlerts()">Acknowledge All</button>
+                            </div>
+                        </div>
+
+                        <div class="predictive-alerts-list">
+                            <div class="predictive-alert-card" data-severity="critical">
+                                <div class="alert-left">
+                                    <div class="alert-icon">⚠️</div>
+                                    <div class="alert-content">
+                                        <div class="alert-title">Pothole Repair Truck #3 — Brake wear predicted</div>
+                                        <div class="alert-meta">Detected: 2 hours ago • Estimated failure: 12h</div>
+                                    </div>
+                                </div>
+                                <div class="alert-actions">
+                                    <button class="btn-secondary-small" onclick="viewAsset('EQ-001')">View</button>
+                                    <button class="btn-primary-small" onclick="scheduleMaintenance('EQ-001')">Schedule</button>
+                                </div>
+                            </div>
+
+                            <div class="predictive-alert-card" data-severity="warning">
+                                <div class="alert-left">
+                                    <div class="alert-icon">🔔</div>
+                                    <div class="alert-content">
+                                        <div class="alert-title">Street Sweeper #7 — Engine vibration anomaly</div>
+                                        <div class="alert-meta">Detected: 8 hours ago • Estimated failure: 3 days</div>
+                                    </div>
+                                </div>
+                                <div class="alert-actions">
+                                    <button class="btn-secondary-small" onclick="viewAsset('EQ-007')">View</button>
+                                    <button class="btn-primary-small" onclick="scheduleMaintenance('EQ-007')">Schedule</button>
+                                </div>
+                            </div>
+
+                            <div class="predictive-alert-card" data-severity="info">
+                                <div class="alert-left">
+                                    <div class="alert-icon">ℹ️</div>
+                                    <div class="alert-content">
+                                        <div class="alert-title">Hydrant Pump #12 — Low lubricant trend</div>
+                                        <div class="alert-meta">Detected: 1 day ago • Recommended check: 48h</div>
+                                    </div>
+                                </div>
+                                <div class="alert-actions">
+                                    <button class="btn-secondary-small" onclick="viewAsset('EQ-012')">View</button>
+                                    <button class="btn-primary-small" onclick="scheduleMaintenance('EQ-012')">Schedule</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Equipment Tracking - PREMIUM REDESIGN -->
+                    <div class="equipment-section-premium">
+                        <div class="section-header-premium">
+                            <div>
+                                <h2 class="section-title-premium">🚛 Equipment &amp; Resource Tracking</h2>
+                                <p class="section-subtitle-premium">Monitor fleet and assets in real-time</p>
+                            </div>
+                            <button class="btn-view-all-premium">View All Assets →</button>
+                        </div>
+                        
+                        <div class="equipment-grid-premium">
+                            <!-- Equipment Card 1 -->
+                            <div class="equipment-card-premium">
+                                <div class="equipment-header-premium">
+                                    <div class="equipment-icon-circle">🚛</div>
+                                    <div class="equipment-title-group">
+                                        <h3 class="equipment-name-premium">Pothole Repair Truck #3</h3>
+                                        <span class="equipment-id-premium">EQ-001</span>
+                                    </div>
+                                    <span class="status-badge-premium status-in-use">
+                                        <span class="status-dot-premium"></span>
+                                        In Use
+                                    </span>
+                                </div>
+                                
+                                <div class="equipment-details-premium">
+                                    <div class="detail-row-premium">
+                                        <span class="detail-icon-premium">🏛️</span>
+                                        <div class="detail-content-premium">
+                                            <span class="detail-label-premium">Department</span>
+                                            <span class="detail-value-premium">Public Works</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-row-premium">
+                                        <span class="detail-icon-premium">📍</span>
+                                        <div class="detail-content-premium">
+                                            <span class="detail-label-premium">Location</span>
+                                            <span class="detail-value-premium">North District</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-row-premium">
+                                        <span class="detail-icon-premium">🔧</span>
+                                        <div class="detail-content-premium">
+                                            <span class="detail-label-premium">Next Maintenance</span>
+                                            <span class="detail-value-premium">November 15, 2024</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="equipment-footer-premium">
+                                    <button class="btn-card-action-premium btn-secondary-card">
+                                        <span>📋</span> View History
+                                    </button>
+                                    <button class="btn-card-action-premium btn-primary-card">
+                                        <span>🔧</span> Schedule Service
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Equipment Card 2 -->
+                            <div class="equipment-card-premium">
+                                <div class="equipment-header-premium">
+                                    <div class="equipment-icon-circle">🧹</div>
+                                    <div class="equipment-title-group">
+                                        <h3 class="equipment-name-premium">Street Sweeper #1</h3>
+                                        <span class="equipment-id-premium">EQ-002</span>
+                                    </div>
+                                    <span class="status-badge-premium status-available">
+                                        <span class="status-dot-premium"></span>
+                                        Available
+                                    </span>
+                                </div>
+                                
+                                <div class="equipment-details-premium">
+                                    <div class="detail-row-premium">
+                                        <span class="detail-icon-premium">🏛️</span>
+                                        <div class="detail-content-premium">
+                                            <span class="detail-label-premium">Department</span>
+                                            <span class="detail-value-premium">Sanitation</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-row-premium">
+                                        <span class="detail-icon-premium">📍</span>
+                                        <div class="detail-content-premium">
+                                            <span class="detail-label-premium">Location</span>
+                                            <span class="detail-value-premium">Municipal Garage</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-row-premium">
+                                        <span class="detail-icon-premium">🔧</span>
+                                        <div class="detail-content-premium">
+                                            <span class="detail-label-premium">Next Maintenance</span>
+                                            <span class="detail-value-premium">December 1, 2024</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="equipment-footer-premium">
+                                    <button class="btn-card-action-premium btn-secondary-card">
+                                        <span>📋</span> View History
+                                    </button>
+                                    <button class="btn-card-action-premium btn-primary-card">
+                                        <span>🚀</span> Deploy Asset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Municipal Analytics View -->
+        <div id="municipalAnalytics" class="view">
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <div class="logo">🏛️</div>
+                    <h2>CivicAI</h2>
+                    <p class="sidebar-subtitle">Municipal Center</p>
+                </div>
+                <nav class="sidebar-nav">
+                    <button class="sidebar-nav-item" data-view="municipalDashboard">
+                        <span class="nav-icon">📊</span>
+                        <span>Command Center</span>
+                    </button>
+                    <button class="sidebar-nav-item active" data-view="municipalAnalytics">
+                        <span class="nav-icon">📈</span>
+                        <span>Analytics</span>
+                    </button>
+                    <button class="sidebar-nav-item">
+                        <span class="nav-icon">⚙️</span>
+                        <span>Settings</span>
+                    </button>
+                </nav>
+            </aside>
+
+            <main class="main-content">
+                <header class="municipal-header">
+                    <div>
+                        <h1>Analytics Dashboard</h1>
+                        <p class="municipal-subtitle">Comprehensive Performance Metrics</p>
+                    </div>
+                    <div class="header-actions">
+                        <select class="form-select-small" style="margin-right: 12px;">
+                            <option>Last 7 Days</option>
+                            <option>Last 30 Days</option>
+                            <option>Last 90 Days</option>
+                            <option>This Year</option>
+                        </select>
+                        <button class="header-icon-btn" id="notificationsBtn2" title="Notifications">
+                            <span class="header-icon">🔔</span>
+                            <span class="notification-badge">3</span>
+                        </button>
+                        <button class="header-icon-btn" id="profileBtn2" title="Profile">
+                            <span class="header-icon">👤</span>
+                        </button>
+                        <button class="header-icon-btn" id="settingsBtn2" title="Settings">
+                            <span class="header-icon">⚙️</span>
+                        </button>
+                    </div>
+                </header>
+
+                <div class="analytics-grid">
+                    <div class="section-card-large">
+                        <h3 class="section-title">Issue Breakdown by Category</h3>
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="section-card-large">
+                        <h3 class="section-title">Resolution Time by Department</h3>
+                        <div class="chart-container">
+                            <canvas id="resolutionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="section-card-large span-2">
+                        <h3 class="section-title">Weekly Report Trends</h3>
+                        <div class="chart-container">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="section-card-large">
+                        <h3 class="section-title">Department Performance</h3>
+                        <div class="performance-table">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Department</th>
+                                        <th>Active</th>
+                                        <th>Avg Response</th>
+                                        <th>Satisfaction</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="performanceTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="section-card-large">
+                        <h3 class="section-title">Key Metrics</h3>
+                        <div class="key-metrics">
+                            <div class="metric-card">
+                                <div class="metric-icon">😊</div>
+                                <div class="metric-value">4.6/5</div>
+                                <div class="metric-label">Citizen Satisfaction</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-icon">📅</div>
+                                <div class="metric-value">156</div>
+                                <div class="metric-label">Reports This Week</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-icon">✅</div>
+                                <div class="metric-value">92%</div>
+                                <div class="metric-label">Resolution Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Issue Detail Modal -->
+    <div id="issueModal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Issue Details</h2>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content confirmation-modal">
+            <div class="confirmation-icon">✅</div>
+            <h2>Report Submitted Successfully!</h2>
+            <div class="tracking-id" id="trackingId">CIV-1006</div>
+            <p>Your issue has been received and is being processed by our AI system.</p>
+            <div class="points-earned">
+                <span class="points-icon">⭐</span>
+                <span class="points-text">+50 Civic Points Earned!</span>
+            </div>
+            <button class="btn btn-primary" onclick="closeConfirmation()">View My Reports</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal settings-modal hidden">
+        <div class="modal-overlay" onclick="closeSettingsModal()"></div>
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="modal-close" onclick="closeSettingsModal()">×</button>
+            </div>
+            <div class="modal-body settings-body">
+                <div class="settings-sidebar">
+                    <button class="settings-nav-item active" data-tab="account">👤 Account Settings</button>
+                    <button class="settings-nav-item" data-tab="notifications">🔔 Notifications</button>
+                    <button class="settings-nav-item" data-tab="department">🏢 Department</button>
+                    <button class="settings-nav-item" data-tab="display">🎨 Display</button>
+                    <button class="settings-nav-item" data-tab="privacy">🔒 Privacy &amp; Security</button>
+                </div>
+                <div class="settings-content">
+                    <!-- Account Settings -->
+                    <div class="settings-tab active" data-tab="account">
+                        <h3 class="settings-tab-title">Account Settings</h3>
+                        <div class="settings-section">
+                            <div class="setting-item">
+                                <label class="setting-label">Change Password</label>
+                                <button class="btn btn-outline btn-sm">Update Password</button>
+                            </div>
+                            <div class="setting-item">
+                                <label class="setting-label">Update Email</label>
+                                <button class="btn btn-outline btn-sm">Change Email</button>
+                            </div>
+                            <div class="setting-item">
+                                <label class="setting-label">Two-Factor Authentication</label>
+                                <button class="btn btn-primary btn-sm">Enable 2FA</button>
+                            </div>
+                            <div class="setting-item">
+                                <label class="setting-label">Session Management</label>
+                                <button class="btn btn-outline btn-sm">View Active Sessions</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Notification Settings -->
+                    <div class="settings-tab" data-tab="notifications">
+                        <h3 class="settings-tab-title">Notification Preferences</h3>
+                        <div class="settings-section">
+                            <div class="setting-item">
+                                <div>
+                                    <label class="setting-label">Email Notifications</label>
+                                    <p class="setting-description">Receive updates via email</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div>
+                                    <label class="setting-label">Push Notifications</label>
+                                    <p class="setting-description">Browser push notifications</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div>
+                                    <label class="setting-label">SMS Alerts</label>
+                                    <p class="setting-description">Critical alerts via SMS</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Department Settings -->
+                    <div class="settings-tab" data-tab="department">
+                        <h3 class="settings-tab-title">Department Settings</h3>
+                        <div class="settings-section">
+                            <div class="setting-item-full">
+                                <label class="setting-label">Default View</label>
+                                <select class="form-control">
+                                    <option>Command Center</option>
+                                    <option>Analytics</option>
+                                    <option>Priority Queue</option>
+                                </select>
+                            </div>
+                            <div class="setting-item-full">
+                                <label class="setting-label">Auto-Assignment Rules</label>
+                                <select class="form-control">
+                                    <option>By Priority</option>
+                                    <option>By Workload</option>
+                                    <option>Round Robin</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Display Settings -->
+                    <div class="settings-tab" data-tab="display">
+                        <h3 class="settings-tab-title">Display Preferences</h3>
+                        <div class="settings-section">
+                            <div class="setting-item-full">
+                                <label class="setting-label">Theme</label>
+                                <select class="form-control">
+                                    <option>Light</option>
+                                    <option>Dark</option>
+                                    <option>Auto</option>
+                                </select>
+                            </div>
+                            <div class="setting-item-full">
+                                <label class="setting-label">Language</label>
+                                <select class="form-control">
+                                    <option>English</option>
+                                    <option>Spanish</option>
+                                    <option>French</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Privacy Settings -->
+                    <div class="settings-tab" data-tab="privacy">
+                        <h3 class="settings-tab-title">Privacy &amp; Security</h3>
+                        <div class="settings-section">
+                            <div class="setting-item">
+                                <div>
+                                    <label class="setting-label">Activity Log</label>
+                                    <p class="setting-description">Track your activity</p>
+                                </div>
+                                <button class="btn btn-outline btn-sm">View Log</button>
+                            </div>
+                            <div class="setting-item">
+                                <div>
+                                    <label class="setting-label">Export Data</label>
+                                    <p class="setting-description">Download your data</p>
+                                </div>
+                                <button class="btn btn-outline btn-sm">Export</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal profile-modal hidden">
+        <div class="modal-overlay" onclick="closeProfileModal()"></div>
+        <div class="modal-content modal-medium">
+            <div class="modal-header">
+                <h2>👤 Profile</h2>
+                <button class="modal-close" onclick="closeProfileModal()">×</button>
+            </div>
+            <div class="modal-body profile-body">
+                <div class="profile-header-modal">
+                    <div class="profile-avatar-large">JS</div>
+                    <h3 class="profile-name-modal">John Smith</h3>
+                    <p class="profile-role-modal">Public Works Supervisor</p>
+                    <p class="profile-id">Employee ID: PW-2024-001</p>
+                    <span class="status-badge active" style="margin-top: 8px; display: inline-block;">● Active</span>
+                </div>
+                <div class="profile-divider"></div>
+                <div class="profile-info-section">
+                    <h4 class="profile-section-title">Contact Information</h4>
+                    <div class="profile-info-item">
+                        <span class="profile-info-icon">📧</span>
+                        <div>
+                            <label style="font-size: 11px; color: var(--color-text-secondary); display: block; margin-bottom: 2px;">Email</label>
+                            <span class="profile-info-text">john.smith@springfield.gov</span>
+                        </div>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-info-icon">📞</span>
+                        <div>
+                            <label style="font-size: 11px; color: var(--color-text-secondary); display: block; margin-bottom: 2px;">Phone</label>
+                            <span class="profile-info-text">+1-555-0789</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-divider"></div>
+                <div class="profile-info-section">
+                    <h4 class="profile-section-title">Department Information</h4>
+                    <div class="profile-info-item">
+                        <span class="profile-info-icon">🏢</span>
+                        <div>
+                            <label style="font-size: 11px; color: var(--color-text-secondary); display: block; margin-bottom: 2px;">Department</label>
+                            <span class="profile-info-text">Public Works</span>
+                        </div>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-info-icon">📍</span>
+                        <div>
+                            <label style="font-size: 11px; color: var(--color-text-secondary); display: block; margin-bottom: 2px;">Service Zone</label>
+                            <span class="profile-info-text">North District</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-divider"></div>
+                <div class="profile-metrics-section">
+                    <h4 class="profile-section-title">Performance Metrics</h4>
+                    <div class="profile-metrics-grid">
+                        <div class="profile-metric-card">
+                            <div class="profile-metric-label">Active Tickets</div>
+                            <div class="profile-metric-value">8</div>
+                        </div>
+                        <div class="profile-metric-card">
+                            <div class="profile-metric-label">Resolved This Week</div>
+                            <div class="profile-metric-value">23</div>
+                        </div>
+                        <div class="profile-metric-card">
+                            <div class="profile-metric-label">Avg Response Time</div>
+                            <div class="profile-metric-value">3.2h</div>
+                        </div>
+                        <div class="profile-metric-card">
+                            <div class="profile-metric-label">Satisfaction Rating</div>
+                            <div class="profile-metric-value">4.6 ⭐</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button class="btn btn-outline" onclick="showToast('Change password form', '🔒')">Change Password</button>
+                    <button class="btn btn-primary" onclick="showToast('Edit profile form', '✏️')">Edit Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View All Alerts Modal -->
+    <div id="viewAllAlertsModal" class="modal alerts-modal hidden">
+        <div class="modal-overlay" onclick="closeViewAllAlerts()"></div>
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>All Predictive Maintenance Alerts</h2>
+                <button class="modal-close" onclick="closeViewAllAlerts()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="alerts-filters">
+                    <select class="form-select-small">
+                        <option>All Types</option>
+                        <option>Seasonal Maintenance</option>
+                        <option>Equipment Maintenance</option>
+                        <option>Infrastructure</option>
+                    </select>
+                    <select class="form-select-small">
+                        <option>All Priorities</option>
+                        <option>High</option>
+                        <option>Medium</option>
+                        <option>Low</option>
+                    </select>
+                </div>
+                <div id="allAlertsList" class="all-alerts-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Team Modal -->
+    <div id="manageTeamModal" class="modal team-modal hidden">
+        <div class="modal-overlay" onclick="closeManageTeam()"></div>
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Team Management</h2>
+                <button class="modal-close" onclick="closeManageTeam()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="team-header">
+                    <button class="btn btn-primary" onclick="showAddStaffForm()">+ Add New Staff</button>
+                    <div class="team-filters">
+                        <select class="form-select-small">
+                            <option>All Departments</option>
+                            <option>Public Works</option>
+                            <option>Sanitation</option>
+                            <option>Traffic Management</option>
+                        </select>
+                        <select class="form-select-small">
+                            <option>All Status</option>
+                            <option>Active</option>
+                            <option>Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="teamMembersList" class="team-members-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>
